@@ -1,0 +1,12 @@
+streamlit==1.41.1
+pandas==2.2.3
+langchain-community==0.3.15
+faiss-cpu==1.10.0
+llama-index==0.12.12
+llama-index-core==0.12.12
+llama-index-embeddings-openai==0.3.1
+llama-index-llms-openai==0.3.13
+llama-index-agent-openai==0.4.2
+llama-index-vector-stores-faiss==0.3.0
+tiktoken==0.8.0
+spacy==3.8.4
