@@ -27,7 +27,12 @@ EMBED_DIMENSION = 512
 CHUNK_SIZE = 1024
 CHUNK_OVERLAP = 50
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+#### Retrieving credentials from .env file
+#OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+#### Retrieving credentials from Streamlit Community
+OPENAI_API_KEY = st.secrets["openai"]["OPENAI_API_KEY"]
+
 if OPENAI_API_KEY:
     os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 else:
