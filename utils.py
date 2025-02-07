@@ -16,6 +16,7 @@ import sys
 import llama_index
 import nest_asyncio
 from dotenv import load_dotenv
+import streamlit as st
 
 load_dotenv()
 nest_asyncio.apply()
