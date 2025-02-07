@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import *
+from utils import load_vector_index_from_faiss, create_chat_engine, qa_chat
 
 
 st.title("Chatbot")
