@@ -1,6 +1,5 @@
 from typing import List
 import openai
-import faiss
 from llama_index.llms.openai import OpenAI
 from llama_index.core.evaluation import FaithfulnessEvaluator, RelevancyEvaluator
 from typing import List
