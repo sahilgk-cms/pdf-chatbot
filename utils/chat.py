@@ -24,8 +24,17 @@ if OPENAI_API_KEY:
 else:
     raise ValueError("OPENAI_API_KEY is not set. Please provide a valid API key.")
 
+#GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GOOGLE_API_KEY = st.secrets["google_api"]["GOOGLE_API_KEY"]
+
+if GOOGLE_API_KEY:
+   os.environ["GOOGLE_API_KEY"] = GOOGLE_API_KEY
+else:
+   raise ValueError("GOOGLE_API_KEY is not set. Please provide a valid API key.")
+   
 
 
+####################################### IF VECTOR EMBEDDINGS ARE USED ########################################################################
 def create_chat_engine(vector_index: VectorStoreIndex):
    '''
   This function create dthe chat engine
@@ -75,3 +84,91 @@ def qa_chat(chat_engine, query: str) -> str:
         answer = None
         source_dict = None
         return answer, source_dict
+    
+
+####################################### IF CHAT PROMPT TEMPLATE IS USED ###############################################
+def convert_query_into_chat_message(text: str, query: str) -> List[llama_index.core.base.llms.types.ChatMessage]:
+  '''
+  This function converts the input text & query into chat message template
+  Args:
+    Input context text & query
+  Returns:
+    Chat Message template 
+  '''
+  
+  template = (
+      "We have provided context information below. \n"
+      "---------------------\n"
+      "{context_str}"
+      "\n---------------------\n"
+      "Given this information, please answer the question: {query_str}\n"
+      "When answering, please provide relevant supporting details and cite the specific part of the context where the answer is derived from."
+      "Please provide the answer in the following format:\n"
+      "Answer: <Your answer here>\n"
+      "Source: <Reference to relevant part of the context>"
+      "If answer is not found in the provided context then reply exactly with:\n"
+      "'Answer not found from the given context provided.'"
+  )
+  qa_template = PromptTemplate(template)
+
+  messages = qa_template.format_messages(context_str = text, query_str = query)
+  return messages
+
+
+def split_answer_and_sources(text: str) -> Tuple[str, str]:
+  '''
+  This function splits the answer & text from response text
+  Args:
+    response text
+  Returns:
+    answer & source
+  '''
+  pattern1 = r"(.*)\s*\(Source: (.*)\)"
+  pattern2 = r"Answer:\s*(.*)\s*\nSource: (.*)"
+
+  matches = re.findall(pattern1, text, re.DOTALL)
+  if not matches:
+    matches = re.findall(pattern2, text, re.DOTALL)
+
+  answers_list = []
+  sources_list = set()
+
+  for answer, source in matches:
+    answers_list.append(answer.strip())
+
+    for s in source.split(";"):
+      sources_list.add(s.strip())
+
+  final_answer = "\n".join(answers_list)
+  final_answer = final_answer.split("Answer:")[-1]
+  final_source = "\n".join(sorted(sources_list))
+  return final_answer, final_source
+
+
+def qa_chat2(text: str, query: str) -> dict:
+  '''
+  This function returns a dictionary containing answer & source
+  Args:
+    Input context text & query
+  Returns:
+    Dictionary containing query, answer, source
+  '''
+  messages = convert_query_into_chat_message(text = text, 
+                                           query = query)
+  llm = Gemini(model="models/gemini-1.5-flash")
+  resp = llm.chat(messages)  #llama_index.core.base.llms.types.ChatResponse
+
+  result_text = resp.message.blocks[0].text
+
+  d = {}
+  d["query"] = query
+
+  if "Source:" in result_text:
+    answer, source = split_answer_and_sources(result_text)
+    d["answer"] = answer
+    d["source"] = source
+  else:
+    d["answer"] = result_text
+    d["source"] = None
+
+  return d
