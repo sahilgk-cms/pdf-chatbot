@@ -12,6 +12,8 @@ from constants import *
 from utils.evaluate_chat import *
 from dotenv import load_dotenv
 import streamlit as st
+from llama_index.core import PromptTemplate
+from llama_index.llms.gemini import Gemini
 
 load_dotenv()
 nest_asyncio.apply()
