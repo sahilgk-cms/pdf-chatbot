@@ -2,10 +2,11 @@ from typing import List
 from llama_index.core import  VectorStoreIndex
 import openai
 from llama_index.llms.openai import OpenAI
-from typing import List
+from typing import List, Tuple
 import numpy as np
 import os
 import sys
+import re
 import llama_index
 import nest_asyncio
 from constants import *
