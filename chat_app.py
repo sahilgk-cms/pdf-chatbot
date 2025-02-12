@@ -8,6 +8,7 @@ from utils.vector_embeddings import *
 
 
 st.title("Chatbot")
+st.header("Used OpenAI Embeddings & LLM")
 
 
 if "chat_engine" not in st.session_state:
