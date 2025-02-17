@@ -87,7 +87,46 @@ def qa_chat(chat_engine, query: str) -> str:
         answer = None
         source_dict = None
         return answer, source_dict
-    
+
+
+def qa_chat_excel(chat_engine, query: str) -> dict:
+  '''
+  This functions initiations the questions-answering & stoes it as a tuple in a list
+  Args:
+     chat engine, chat history
+  Returns:
+    chat history containing all questions and answers along with their sources & stores as a dictionary
+  '''
+  d = {}
+
+  result = chat_engine.chat(query)
+  d["query"] = query
+  answer = result.response
+  source_nodes = result.source_nodes
+  faithfulness = check_faithfulness(query, result)
+  relevancy = check_relevancy(query, result)
+
+  source_dict = {}
+  scores = []
+
+  for i in range(0, len(source_nodes)):
+    source_file = source_nodes[i].metadata["file_name"]
+    scores.append(source_nodes[i].score)
+
+    if source_file not in source_dict:
+      source_dict[source_file] = []
+
+    source_sheet = source_nodes[i].metadata["sheet"]
+    if source_sheet not in source_dict[source_file]:
+      source_dict[source_file].append(source_sheet)
+
+  scores = np.array(scores)
+  if scores.mean() >= 0.5 and faithfulness and relevancy:
+      return answer, source_dict
+  else:
+      answer = None
+      source_dict = None
+      return answer, source_dict
 
 ####################################### IF CHAT PROMPT TEMPLATE IS USED ###############################################
 def convert_query_into_chat_message(text: str, query: str) -> List[llama_index.core.base.llms.types.ChatMessage]:
