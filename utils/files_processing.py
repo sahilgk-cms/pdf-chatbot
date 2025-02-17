@@ -6,6 +6,7 @@ from typing import List
 import os
 import llama_index
 from pypdf import PdfReader
+import json
 from dotenv import load_dotenv
 
 ############################################## LLAMAINDEX DOCUMENTS ################################################################
