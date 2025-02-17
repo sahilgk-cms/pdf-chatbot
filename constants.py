@@ -5,4 +5,5 @@ CHUNK_SIZE = 1024
 CHUNK_OVERLAP = 50
 NODE_THRESHOLD = 0.5
 WEAVIATE_URL = "https://td8hytwktcihmul5rlr8sa.c0.asia-southeast1.gcp.weaviate.cloud"
-WEAVIATE_INDEX = "BAT"
+WEAVIATE_INDEX_FOR_BAT = "BAT"
+WEAVIATE_INDEX_FOR_OAK = "OAK"
