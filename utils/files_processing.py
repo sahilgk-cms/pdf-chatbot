@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from llama_index.core import  Document
